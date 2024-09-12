@@ -1,0 +1,21 @@
+spring:
+  main:
+    web-application-type: reactive  # WebFlux를 사용하여 리액티브한 애플리케이션으로 설정
+  r2dbc:
+    url: r2dbc:h2:mem:///testdb
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true  # H2 콘솔을 활성화하여 브라우저에서 접속 가능하게 함
+  flyway:
+    enabled: true
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:/db/schema.sql
+
+gemini:
+  api:
+    key: AIzaSyDrC4U7xeBex1cf7WrnCjXcHAPhbuZpkdE
+    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=
