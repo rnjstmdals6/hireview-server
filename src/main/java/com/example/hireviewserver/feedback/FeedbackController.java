@@ -12,7 +12,6 @@ import reactor.core.publisher.Flux;
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
-
     @PostMapping(value = "/api/v1/feedback/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> getFeedbackByQuestion(@RequestBody FeedbackRequestDTO request) {
         return feedbackService.getFeedbackByQuestion(request);

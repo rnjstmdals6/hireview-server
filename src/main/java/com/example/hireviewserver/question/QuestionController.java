@@ -22,6 +22,4 @@ public class QuestionController {
             System.out.println(question.getQuestion());  // 질문을 콘솔에 출력
         });
     }
-
-
 }

@@ -8,6 +8,6 @@ import reactor.core.publisher.Flux;
 @Repository
 public interface QuestionRepository extends ReactiveCrudRepository<Question, Long> {
 
-    @Query("SELECT * FROM question WHERE job = :job ORDER BY RANDOM() LIMIT 5")
+    @Query("SELECT * FROM question WHERE job = :job ORDER BY RANDOM() LIMIT 2")
     Flux<Question> findRandomQuestionsByJob(String job);
 }
