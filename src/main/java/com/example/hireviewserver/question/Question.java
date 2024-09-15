@@ -12,9 +12,13 @@ public class Question {
     private Long id;
     private String job;
     private String question;
+    private Integer priority;
+    private Integer difficulty;
 
-    public Question(String job, String question) {
+    public Question(String job, String question, Integer priority, Integer difficulty) {
         this.job = job;
         this.question = question;
+        this.priority = priority;
+        this.difficulty = difficulty;
     }
 }
