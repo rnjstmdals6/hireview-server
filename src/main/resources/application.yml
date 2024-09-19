@@ -15,6 +15,22 @@ spring:
     username: sa
     password:
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 54700092433-7jslsjuohgh38vs53oinpg614kic1rrv.apps.googleusercontent.com
+            client-secret: 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
+            redirect-uri: "http://localhost:8080/login/oauth2/code/google"
+            scope:
+              - email
+              - profile
+  jwt:
+    secret: RFV6VlY4LX5uKWZWV0gjX1A5KCZBZ2lROz9QPFdKMT87blNDWE9me0g+VT0lYjgxTU9NKGoza3hRdCZyJ29R
+    expiration: 3600000
+    refresh-expiration: 86400000
+
 h2:
   console:
     enabled: true
@@ -25,3 +41,4 @@ gemini:
   api:
     key: AIzaSyDrC4U7xeBex1cf7WrnCjXcHAPhbuZpkdE
     url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=
+
