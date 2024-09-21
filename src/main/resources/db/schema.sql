@@ -25,6 +25,45 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+INSERT INTO users (email, name, picture) VALUES
+                                             ('user1@example.com', 'User One', 'https://example.com/pic1.jpg'),
+                                             ('user2@example.com', 'User Two', 'https://example.com/pic2.jpg'),
+                                             ('user3@example.com', 'User Three', 'https://example.com/pic3.jpg');
+
+CREATE TABLE IF NOT EXISTS posts (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    category VARCHAR(255),
+    user_id BIGINT NOT NULL,
+    CONSTRAINT fk_posts_users FOREIGN KEY (user_id) REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO posts (title, description, category, user_id)
+VALUES
+    ('Post Title 1', 'Description for post 1', 'Tech', 1),
+    ('Post Title 2', 'Description for post 2', 'Lifestyle', 2),
+    ('Post Title 3', 'Description for post 3', NULL, 3),
+    ('Post Title 4', 'Description for post 4', 'Tech', 1),
+    ('Post Title 5', 'Description for post 5', 'Lifestyle', 2),
+    ('Post Title 6', 'Description for post 6', NULL, 3),
+    ('Post Title 7', 'Description for post 7', 'Tech', 1),
+    ('Post Title 8', 'Description for post 8', 'Lifestyle', 2),
+    ('Post Title 9', 'Description for post 9', NULL, 3),
+    ('Post Title 10', 'Description for post 10', 'Tech', 1),
+    ('Post Title 11', 'Description for post 11', 'Lifestyle', 2),
+    ('Post Title 12', 'Description for post 12', NULL, 3),
+    ('Post Title 13', 'Description for post 13', 'Tech', 1),
+    ('Post Title 14', 'Description for post 14', 'Lifestyle', 2),
+    ('Post Title 15', 'Description for post 15', NULL, 3),
+    ('Post Title 16', 'Description for post 16', 'Tech', 1),
+    ('Post Title 17', 'Description for post 17', 'Lifestyle', 2),
+    ('Post Title 18', 'Description for post 18', NULL, 3),
+    ('Post Title 19', 'Description for post 19', 'Tech', 1),
+    ('Post Title 20', 'Description for post 20', 'Lifestyle', 2);
+
+
 -- 백엔드 기술면접 질문 데이터
 INSERT INTO question (job, question, priority, difficulty, answer)
 VALUES
