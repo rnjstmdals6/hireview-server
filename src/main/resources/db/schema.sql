@@ -26,9 +26,9 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 INSERT INTO users (email, name, picture) VALUES
-                                             ('user1@example.com', 'User One', 'https://example.com/pic1.jpg'),
-                                             ('user2@example.com', 'User Two', 'https://example.com/pic2.jpg'),
-                                             ('user3@example.com', 'User Three', 'https://example.com/pic3.jpg');
+                                             ('user1@example.com', 'User One', 'https://api.dicebear.com/7.x/miniavs/svg?seed=3'),
+                                             ('user2@example.com', 'User Two', 'https://api.dicebear.com/7.x/miniavs/svg?seed=8'),
+                                             ('user3@example.com', 'User Three', 'https://api.dicebear.com/7.x/miniavs/svg?seed=12');
 
 CREATE TABLE IF NOT EXISTS posts (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -42,26 +42,36 @@ CREATE TABLE IF NOT EXISTS posts (
 
 INSERT INTO posts (title, description, category, user_id)
 VALUES
-    ('Post Title 1', 'Description for post 1', 'Tech', 1),
-    ('Post Title 2', 'Description for post 2', 'Lifestyle', 2),
-    ('Post Title 3', 'Description for post 3', NULL, 3),
-    ('Post Title 4', 'Description for post 4', 'Tech', 1),
-    ('Post Title 5', 'Description for post 5', 'Lifestyle', 2),
-    ('Post Title 6', 'Description for post 6', NULL, 3),
-    ('Post Title 7', 'Description for post 7', 'Tech', 1),
-    ('Post Title 8', 'Description for post 8', 'Lifestyle', 2),
-    ('Post Title 9', 'Description for post 9', NULL, 3),
-    ('Post Title 10', 'Description for post 10', 'Tech', 1),
-    ('Post Title 11', 'Description for post 11', 'Lifestyle', 2),
-    ('Post Title 12', 'Description for post 12', NULL, 3),
-    ('Post Title 13', 'Description for post 13', 'Tech', 1),
-    ('Post Title 14', 'Description for post 14', 'Lifestyle', 2),
-    ('Post Title 15', 'Description for post 15', NULL, 3),
-    ('Post Title 16', 'Description for post 16', 'Tech', 1),
-    ('Post Title 17', 'Description for post 17', 'Lifestyle', 2),
-    ('Post Title 18', 'Description for post 18', NULL, 3),
-    ('Post Title 19', 'Description for post 19', 'Tech', 1),
-    ('Post Title 20', 'Description for post 20', 'Lifestyle', 2);
+    -- 자유 게시판 게시물
+    ('요즘 듣기 좋은 음악 추천해요', '요즘 들으면 기분 좋아지는 음악 추천드립니다. 모두 즐거운 하루 보내세요!', '자유 게시판', 1),
+    ('주말에 가볼 만한 곳 추천해주세요', '이번 주말에 짧게 여행을 갈만한 곳을 찾고 있어요. 가보신 곳 중 추천해주실 곳 있나요?', '자유 게시판', 2),
+    ('책 추천해 주세요!', '요즘 독서하는 재미에 빠졌습니다. 읽고 좋았던 책 추천해주시면 감사하겠습니다.', '자유 게시판', 3),
+    ('게임 좋아하는 분들 모여요!', '최근에 시작한 게임이 너무 재밌어요. 같이 하실 분 있으면 댓글 남겨주세요!', '자유 게시판', 1),
+    ('영화 추천 부탁드려요', '가장 감명 깊게 본 영화가 있나요? 주말에 볼 영화 추천 부탁드립니다.', '자유 게시판', 2),
+    ('오늘 아침에 일어난 일 공유해요', '오늘 출근길에 있었던 재미있는 일을 공유합니다. 여러분도 하루를 어떻게 시작하셨나요?', '자유 게시판', 2),
+    ('다이어트 꿀팁 공유해요', '다이어트 중인데 효과를 본 방법들이 있으면 공유해 주세요. 건강하게 관리합시다!', '자유 게시판', 3),
+    ('최신 IT 뉴스 공유', '요즘 기술 트렌드가 어떻게 변화하는지 궁금하시죠? 최근 IT 뉴스 요약 공유합니다.', '자유 게시판', 3),
+
+    -- 피어 리뷰 (면접 피드백 게시물)
+    ('프론트엔드 면접 후기 및 질문 공유', '최근 프론트엔드 면접을 봤는데 예상치 못한 질문들이 많았습니다. 같이 공유해요.', '피어 리뷰', 3),
+    ('백엔드 면접 질문 피드백 부탁드립니다', '백엔드 면접에서 질문 받은 내용을 정리해봤습니다. 피드백 주시면 감사하겠습니다.', '피어 리뷰', 2),
+    ('면접에서 자주 나오는 기술 질문', '여러 회사를 지원하며 공통적으로 받았던 질문들을 정리해봤습니다. 도움이 되길 바랍니다.', '피어 리뷰', 3),
+    ('비전공자 면접 준비 후기', '저는 비전공자로서 IT 기업 면접 준비를 했는데, 그 과정에서 배운 점을 공유하고 싶습니다.', '피어 리뷰', 1),
+    ('대기업 면접 후기', '최근 대기업 면접을 보고 왔습니다. 경험한 질문들과 분위기를 리뷰해 봅니다.', '피어 리뷰', 1),
+    ('코딩 테스트 후기와 팁', '면접 전에 코딩 테스트를 진행했는데, 난이도가 생각보다 높았습니다. 문제와 해결 방법을 공유합니다.', '피어 리뷰', 2),
+    ('스타트업 면접 질문과 피드백', '스타트업 면접에서 받았던 질문들과 피드백을 정리해봤습니다. 함께 참고하시길 바랍니다.', '피어 리뷰', 3),
+    ('면접에서 가장 어려웠던 질문', '면접 중 가장 예상치 못한 질문이 무엇이었는지 공유하고, 그에 대한 답변 전략을 논의하고 싶습니다.', '피어 리뷰', 1),
+
+    -- 스터디 게시물
+    ('자바스크립트 심화 스터디 모집', 'ES6부터 최신 자바스크립트 기술을 심도 있게 다루는 스터디에 참여하실 분을 모집합니다.', '스터디', 1),
+    ('알고리즘 스터디 같이 하실 분 구합니다', '매주 알고리즘 문제를 풀고 함께 토론하는 스터디를 모집합니다. 성실한 분을 기다립니다.', '스터디', 2),
+    ('CS 기본기 스터디 모집', '컴퓨터 공학 기초 지식을 다지는 스터디를 시작하려고 합니다. 함께 공부하실 분들 구합니다.', '스터디', 1),
+    ('React 프로젝트 스터디 모집', 'React를 활용한 프로젝트 개발 스터디를 진행합니다. 프론트엔드 개발에 관심 있는 분들 환영합니다.', '스터디', 3),
+    ('프로그래밍 면접 대비 스터디 모집', '프로그래밍 면접 준비를 함께 할 사람들을 모집합니다. 알고리즘부터 시스템 설계까지 다룹니다.', '스터디', 2),
+    ('주말 코딩 스터디 구합니다', '주말마다 함께 모여서 각자 프로젝트를 진행하며 피드백을 주고받는 스터디입니다.', '스터디', 1),
+    ('백엔드 개발 스터디원 구합니다', 'Java, Spring을 중심으로 백엔드 개발을 공부하는 스터디입니다. 꾸준히 참여할 분 구합니다.', '스터디', 3),
+    ('데이터베이스 스터디 모집', '데이터베이스 이론과 실습을 병행하는 스터디를 진행하려고 합니다. 함께 성장할 분들을 기다립니다.', '스터디', 2);
+
 
 
 -- 백엔드 기술면접 질문 데이터
