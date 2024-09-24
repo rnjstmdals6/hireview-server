@@ -11,16 +11,18 @@ import java.util.Date;
 @Getter
 @Setter
 public class PostResponseDTO {
+    private Long id;
     private String title;
     private String description;
     private String email;
     private String name;
     private String picture;
-    private String createdAt; // LocalDateTime 대신 String으로 반환
+    private String createdAt;
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); // 년-월-일 시:분
 
     public PostResponseDTO(Post post, User user) {
+        this.id = post.getId();
         this.title = post.getTitle();
         this.description = post.getDescription();
         this.email = user.getEmail();

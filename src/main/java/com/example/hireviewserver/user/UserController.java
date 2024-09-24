@@ -23,7 +23,8 @@ public class UserController {
     public Mono<UserInfoResponseDTO> getUserInfo(Mono<Principal> principal) {
         return principal
                 .map(Principal::getName)
-                .flatMap(userService::findUser);
+                .flatMap(userService::findUserByEmail)
+                .map(UserInfoResponseDTO::new);
     }
 
     @PostMapping("/api/token/refresh")

@@ -26,4 +26,12 @@ public class Post {
         this.createdAt = createAt;
         this.userId = userId;
     }
+
+    public Post(PostRequestDTO dto, Long userId) {
+        this.title = dto.getTitle();
+        this.description = dto.getDescription();
+        this.category = dto.getCategory();
+        this.userId = userId;
+        this.createdAt = LocalDateTime.now();
+    }
 }
