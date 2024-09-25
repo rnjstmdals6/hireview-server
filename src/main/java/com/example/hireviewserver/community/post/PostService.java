@@ -1,4 +1,4 @@
-package com.example.hireviewserver.post;
+package com.example.hireviewserver.community.post;
 
 import com.example.hireviewserver.common.PageResponseDTO;
 import com.example.hireviewserver.user.UserService;

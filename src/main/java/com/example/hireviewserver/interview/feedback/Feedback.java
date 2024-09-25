@@ -1,4 +1,4 @@
-package com.example.hireviewserver.feedback;
+package com.example.hireviewserver.interview.feedback;
 
 import lombok.Getter;
 import org.springframework.data.annotation.Id;

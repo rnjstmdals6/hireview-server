@@ -40,6 +40,17 @@ CREATE TABLE IF NOT EXISTS posts (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+
+CREATE TABLE IF NOT EXISTS comments (
+     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    description VARCHAR(255) NOT NULL,
+    post_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    CONSTRAINT fk_comments_posts FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT fk_comments_users FOREIGN KEY (post_id) REFERENCES posts(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
 INSERT INTO posts (title, description, category, user_id)
 VALUES
     -- 자유 게시판 게시물
@@ -71,7 +82,6 @@ VALUES
     ('주말 코딩 스터디 구합니다', '주말마다 함께 모여서 각자 프로젝트를 진행하며 피드백을 주고받는 스터디입니다.', '스터디', 1),
     ('백엔드 개발 스터디원 구합니다', 'Java, Spring을 중심으로 백엔드 개발을 공부하는 스터디입니다. 꾸준히 참여할 분 구합니다.', '스터디', 3),
     ('데이터베이스 스터디 모집', '데이터베이스 이론과 실습을 병행하는 스터디를 진행하려고 합니다. 함께 성장할 분들을 기다립니다.', '스터디', 2);
-
 
 
 -- 백엔드 기술면접 질문 데이터

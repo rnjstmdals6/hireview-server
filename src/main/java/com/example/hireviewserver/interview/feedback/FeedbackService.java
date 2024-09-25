@@ -1,4 +1,4 @@
-package com.example.hireviewserver.feedback;
+package com.example.hireviewserver.interview.feedback;
 
 import com.example.hireviewserver.gemini.GeminiRequestDTO;
 import com.example.hireviewserver.gemini.GeminiService;

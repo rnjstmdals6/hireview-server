@@ -1,4 +1,4 @@
-package com.example.hireviewserver.question;
+package com.example.hireviewserver.interview.question;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,4 +1,4 @@
-package com.example.hireviewserver.post;
+package com.example.hireviewserver.community.post;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

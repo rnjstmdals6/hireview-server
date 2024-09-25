@@ -1,4 +1,4 @@
-package com.example.hireviewserver.question;
+package com.example.hireviewserver.interview.question;
 
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;

@@ -1,18 +1,15 @@
-package com.example.hireviewserver.post;
+package com.example.hireviewserver.community.comment;
 
 import com.example.hireviewserver.user.User;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 @Getter
 @Setter
-public class PostResponseDTO {
+public class CommentResponseDTO {
     private Long id;
-    private String title;
     private String description;
     private String email;
     private String name;
@@ -21,13 +18,12 @@ public class PostResponseDTO {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); // 년-월-일 시:분
 
-    public PostResponseDTO(Post post, User user) {
-        this.id = post.getId();
-        this.title = post.getTitle();
-        this.description = post.getDescription();
+    public CommentResponseDTO(Comment comment, User user) {
+        this.id = comment.getId();
+        this.description = comment.getDescription();
         this.email = user.getEmail();
         this.name = user.getName();
         this.picture = user.getPicture();
-        this.createdAt = post.getCreatedAt().format(FORMATTER); // LocalDateTime을 포맷팅
+        this.createdAt = comment.getCreatedAt().format(FORMATTER);
     }
 }

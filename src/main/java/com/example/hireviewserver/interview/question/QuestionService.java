@@ -1,8 +1,7 @@
-package com.example.hireviewserver.question;
+package com.example.hireviewserver.interview.question;
 
 import com.example.hireviewserver.common.PageResponseDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
