@@ -16,16 +16,9 @@ public class Post {
     private String title;
     private String description;
     private String category;
+    private Long views = 0L;
     private Long userId;
     private LocalDateTime createdAt;
-
-    public Post(String title, String description, String category, LocalDateTime createAt, Long userId) {
-        this.title = title;
-        this.description = description;
-        this.category = category;
-        this.createdAt = createAt;
-        this.userId = userId;
-    }
 
     public Post(PostRequestDTO dto, Long userId) {
         this.title = dto.getTitle();
@@ -33,5 +26,9 @@ public class Post {
         this.category = dto.getCategory();
         this.userId = userId;
         this.createdAt = LocalDateTime.now();
+    }
+
+    public void increaseView() {
+        this.views++;
     }
 }

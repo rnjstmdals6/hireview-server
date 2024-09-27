@@ -36,10 +36,18 @@ CREATE TABLE IF NOT EXISTS posts (
     description VARCHAR(255) NOT NULL,
     category VARCHAR(255),
     user_id BIGINT NOT NULL,
+    views BIGINT,
     CONSTRAINT fk_posts_users FOREIGN KEY (user_id) REFERENCES users(id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE likes (
+   id BIGINT AUTO_INCREMENT PRIMARY KEY,
+   post_id BIGINT NOT NULL,
+   user_id BIGINT NOT NULL,
+   liked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   UNIQUE(post_id, user_id)  -- 한 유저는 한 게시물에 대해 한 번만 좋아요를 누를 수 있음
+);
 
 CREATE TABLE IF NOT EXISTS comments (
      id BIGINT AUTO_INCREMENT PRIMARY KEY,
