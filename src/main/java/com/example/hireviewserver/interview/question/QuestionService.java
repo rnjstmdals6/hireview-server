@@ -25,4 +25,8 @@ public class QuestionService {
                 new PageResponseDTO<>(questionList, totalElements, page)
         );
     }
+
+    public Mono<Question> findQuestionById(Long questionId) {
+        return questionRepository.findById(questionId);
+    }
 }

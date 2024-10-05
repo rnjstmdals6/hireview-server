@@ -14,10 +14,21 @@ import java.util.Objects;
 public class PostController {
     private final PostService postService;
 
-    // 게시글 생성
     @PostMapping("/api/v1/post")
     public Mono<PostResponseDTO> createPost(Mono<Principal> principal, @RequestBody PostRequestDTO dto) {
         return postService.createPost(dto, principal);
+    }
+
+    @PutMapping("/api/v1/post")
+    public Mono<PostResponseDTO> modifyPost(Mono<Principal> principal, @RequestBody PostRequestDTO dto) {
+        return postService.modifyPost(dto, principal);
+    }
+
+    @DeleteMapping("/api/v1/post/{postId}")
+    public Mono<Void> deletePost(@PathVariable Long postId, Mono<Principal> principal) {
+        return principal
+                .map(Principal::getName)
+                .flatMap(email -> postService.deletePost(postId, email));
     }
 
     @GetMapping("/api/v1/all-post")
@@ -25,11 +36,17 @@ public class PostController {
             @RequestParam(required = false) String category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "false") boolean myPosts,
             Mono<Principal> principal
     ) {
         return principal
                 .map(Principal::getName)
-                .flatMap(userId -> postService.getAllPostByCategory(category, page, size, Long.valueOf(userId)))
+                .flatMap(email -> {
+                    if (myPosts) {
+                        return postService.getMyPosts(page, size, email);
+                    }
+                    return postService.getAllPostByCategory(category, page, size, email);
+                })
                 .switchIfEmpty(postService.getAllPostByCategory(category, page, size, null));
     }
 
@@ -39,7 +56,7 @@ public class PostController {
 
         return principal
                 .map(Principal::getName)
-                .flatMap(userId -> postService.getPostById(postId, ipAddress, Long.valueOf(userId)))
+                .flatMap(email -> postService.getPostById(postId, ipAddress, email))
                 .switchIfEmpty(postService.getPostById(postId, ipAddress, null));
     }
 }

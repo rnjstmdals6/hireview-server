@@ -26,4 +26,16 @@ public class CommentController {
     ) {
         return commentService.findAllByPostId(postId, page, size);
     }
+
+    @PutMapping("/api/v1/comment/{commentId}")
+    public Mono<CommentResponseDTO> modifyComment(Mono<Principal> principal, @PathVariable Long commentId, @RequestBody CommentRequestDTO dto) {
+        return commentService.modifyComment(dto, principal, commentId);
+    }
+
+    @DeleteMapping("/api/v1/comment/{commentId}")
+    public Mono<Void> deleteComment(@PathVariable Long commentId, Mono<Principal> principal) {
+        return principal
+                .map(Principal::getName)
+                .flatMap(email -> commentService.deleteComment(commentId, email));
+    }
 }

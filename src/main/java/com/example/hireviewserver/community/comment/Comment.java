@@ -25,4 +25,8 @@ public class Comment {
         this.userId = userId;
         this.createdAt = LocalDateTime.now();
     }
+
+    public void modify(CommentRequestDTO dto) {
+        this.description = dto.getDescription();
+    }
 }

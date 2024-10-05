@@ -1,8 +1,6 @@
 package com.example.hireviewserver.community.comment;
 
 import com.example.hireviewserver.common.PageResponseDTO;
-import com.example.hireviewserver.community.post.Post;
-import com.example.hireviewserver.community.post.PostResponseDTO;
 import com.example.hireviewserver.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +14,7 @@ import java.security.Principal;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final UserService userService;
+
     public Mono<CommentResponseDTO> createComment(CommentRequestDTO dto, Mono<Principal> principal) {
         return principal
                 .map(Principal::getName)
@@ -26,7 +25,7 @@ public class CommentService {
     }
 
     public Mono<PageResponseDTO<CommentResponseDTO>> findAllByPostId(Long postId, int page, int size) {
-        Mono<Long> total = commentRepository.countByPostId(postId);
+        Mono<Long> total = getCommentCount(postId);
 
         Flux<CommentResponseDTO> comments = commentRepository.findAllByPostIdWithPagination(postId, size, page * size)
                 .flatMap(comment -> userService.findUserById(comment.getUserId())
@@ -34,5 +33,32 @@ public class CommentService {
 
         return total.zipWith(comments.collectList(), (totalElements, postList) ->
                 new PageResponseDTO<>(postList, totalElements, page));
+    }
+
+    public Mono<Long> getCommentCount(Long postId) {
+        return commentRepository.countByPostId(postId);
+    }
+
+    public Mono<Void> deleteComment(Long commentId, String email) {
+        return userService.findUserIdByEmail(email).flatMap(
+                userId -> commentRepository.deleteByIdAndUserId(commentId, userId)
+        );
+    }
+
+    public Mono<CommentResponseDTO> modifyComment(CommentRequestDTO dto, Mono<Principal> principal, Long commentId) {
+        return principal
+                .map(Principal::getName)
+                .flatMap(userService::findUserIdByEmail)
+                .flatMap(userId -> commentRepository.findById(commentId)
+                        .flatMap(comment -> {
+                            if (!comment.getUserId().equals(userId)) {
+                                return Mono.error(new RuntimeException("권한이 없습니다."));
+                            }
+                            comment.modify(dto);
+                            return commentRepository.save(comment)
+                                    .flatMap(updateComment -> userService.findUserById(updateComment.getUserId())
+                                            .map(user -> new CommentResponseDTO(updateComment, user)));
+                        })
+                );
     }
 }

@@ -33,4 +33,39 @@ public class UserService {
         return userRepository.findByEmail(email)
                 .map(User::getId);
     }
+
+    public Mono<Void> setUserName(String email, SetUserNameRequestDTO dto) {
+        return userRepository.findByEmail(email)
+                .flatMap(user -> {
+                    user.setName(dto.getName());
+                    return userRepository.save(user);
+                })
+                .then();
+    }
+
+    public Mono<Void> setUserJob(String email, SetUserJobRequestDTO dto) {
+        return userRepository.findByEmail(email)
+                .flatMap(user -> {
+                    user.setJob(dto.getJob());
+                    return userRepository.save(user);
+                })
+                .then();
+    }
+
+    public Mono<Void> deleteUser(String email) {
+        return userRepository.findByEmail(email)
+                .flatMap(userRepository::delete)
+                .then();
+    }
+
+    public Mono<User> consumeToken(String email) {
+        return userRepository.findByEmail(email)
+                .flatMap(user -> {
+                    if (user.getToken() == null || user.getToken() <= 0) {
+                        return Mono.error(new IllegalStateException("Not enough tokens"));
+                    }
+                    user.decreaseToken();
+                    return userRepository.save(user);
+                });
+    }
 }

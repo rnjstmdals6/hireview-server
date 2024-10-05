@@ -1,5 +1,6 @@
 package com.example.hireviewserver.interview.feedback;
 
+import com.example.hireviewserver.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -9,11 +10,16 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class FeedbackEventListener {
     private final FeedbackRepository feedbackRepository;
+    private final UserService userService;
 
     @Async
     @EventListener
     public void handleFeedbackSaveEvent(FeedbackSaveEvent event) {
-        Feedback feedback = new Feedback(event.getScore(), event.getFeedback(), event.getQuestionId());
-        feedbackRepository.save(feedback).subscribe();
+        userService.findUserIdByEmail(event.getEmail())
+                .flatMap(userId -> {
+                    Feedback feedback = new Feedback(event.getScore(), event.getFeedback(), event.getAnswer(),event.getQuestionId(), userId);
+                    return feedbackRepository.save(feedback);
+                })
+                .subscribe();
     }
 }

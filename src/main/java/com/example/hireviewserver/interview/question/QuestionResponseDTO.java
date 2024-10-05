@@ -10,12 +10,12 @@ public class QuestionResponseDTO {
     private Integer priority;
     private Integer difficulty;
     private String answer;
-    private Long questionId;
+    private Long id;
 
     public QuestionResponseDTO(Question question) {
         this.job = question.getJob();
         this.question = question.getQuestion();
-        this.questionId = question.getId();
+        this.id = question.getId();
         this.answer = question.getAnswer();
         this.priority = question.getPriority();
         this.difficulty = question.getDifficulty();

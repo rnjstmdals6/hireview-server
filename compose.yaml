@@ -1,1 +1,29 @@
+version: '3.8'
 services:
+  mariadb-container:
+    image: mariadb:latest  # MariaDB 이미지 사용
+    environment:
+      MYSQL_ROOT_PASSWORD: rnjs6078
+      MYSQL_DATABASE: hireviewdb
+      MYSQL_USER: hireviewuser
+      MYSQL_PASSWORD: rnjs6078
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql  # 볼륨 경로 설정
+
+  app:
+    image: hireview-server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - mariadb-container  # 의존성을 MariaDB 컨테이너로 변경
+
+volumes:
+  mariadb_data:
+    driver: local

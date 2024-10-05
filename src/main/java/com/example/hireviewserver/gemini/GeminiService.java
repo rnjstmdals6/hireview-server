@@ -8,6 +8,8 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
+import java.time.Duration;
+
 @Service
 public class GeminiService {
 
@@ -29,6 +31,15 @@ public class GeminiService {
                 .header(HttpHeaders.ACCEPT, MediaType.TEXT_EVENT_STREAM_VALUE)
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
-                .bodyToFlux(String.class);
+                .bodyToFlux(String.class).timeout(Duration.ofSeconds(10))
+                .doOnError(error -> {
+                    // 에러 발생 시 로그 출력
+                    System.err.println("Error occurred during stream: " + error.getMessage());
+                })
+                .doOnCancel(() -> {
+                    // 스트림이 취소되었을 때 로그 출력
+                    System.out.println("Stream was canceled");
+                });
+
     }
 }

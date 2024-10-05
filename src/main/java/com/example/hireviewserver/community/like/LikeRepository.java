@@ -8,8 +8,9 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface LikeRepository extends ReactiveCrudRepository<Like, Long> {
 
-    @Query("SELECT COUNT(*) > 0 FROM likes WHERE post_id = :postId AND user_id = :userId")
-    Mono<Boolean> existsByPostIdAndUserId(Long postId, Long userId);
+    // Boolean 대신 Long을 반환하고, 이를 수동으로 변환하도록 변경
+    @Query("SELECT COUNT(*) FROM likes WHERE post_id = :postId AND user_id = :userId")
+    Mono<Long> countByPostIdAndUserId(Long postId, Long userId);
 
     @Query("SELECT COUNT(*) FROM likes WHERE post_id = :postId")
     Mono<Long> countByPostId(Long postId);

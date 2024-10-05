@@ -28,6 +28,12 @@ public class Post {
         this.createdAt = LocalDateTime.now();
     }
 
+    public void modify(PostRequestDTO dto) {
+        this.title = dto.getTitle();
+        this.category = dto.getCategory();
+        this.description = dto.getDescription();
+    }
+
     public void increaseView() {
         this.views++;
     }

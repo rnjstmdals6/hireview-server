@@ -13,4 +13,7 @@ public interface CommentRepository extends ReactiveCrudRepository<Comment, Long>
 
     @Query("SELECT * FROM comments WHERE post_id = :postId LIMIT :limit OFFSET :offset")
     Flux<Comment> findAllByPostIdWithPagination(Long postId, int limit, int offset);
+
+    @Query("DELETE FROM comments WHERE id = :commentId AND user_id = :userId")
+    Mono<Void> deleteByIdAndUserId(Long commentId, Long userId);
 }

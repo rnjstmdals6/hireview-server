@@ -2,7 +2,7 @@ spring:
   main:
     web-application-type: reactive  # WebFlux를 사용하여 리액티브한 애플리케이션으로 설정
   r2dbc:
-    url: r2dbc:mysql://0.0.0.0:3306/hireviewdb
+    url: r2dbc:mariadb://mariadb-container:3306/hireviewdb  # R2DBC URL 형식에 맞게 설정
     username: hireviewuser
     password: rnjs6078
 
@@ -13,7 +13,7 @@ spring:
           google:
             client-id: 54700092433-7jslsjuohgh38vs53oinpg614kic1rrv.apps.googleusercontent.com
             client-secret: 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
-            redirect-uri: "http://localhost:8080/login/oauth2/code/google"
+            redirect-uri: "https://www.hireview.store/login/oauth2/code/google"
             scope:
               - email
               - profile
@@ -31,5 +31,6 @@ gemini:
     key: AIzaSyDrC4U7xeBex1cf7WrnCjXcHAPhbuZpkdE
     url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=
 
+
 app:
-  redirect-url: "http://127.0.0.1:5173"
+  redirect-url: "https://hireview.net"

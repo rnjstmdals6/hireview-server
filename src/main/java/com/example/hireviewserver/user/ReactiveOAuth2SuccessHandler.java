@@ -1,6 +1,7 @@
 package com.example.hireviewserver.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,9 @@ public class ReactiveOAuth2SuccessHandler implements ServerAuthenticationSuccess
 
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
+
+    @Value("${app.redirect-url}")
+    private String redirectUrl;
 
     @Override
     public Mono<Void> onAuthenticationSuccess(WebFilterExchange webFilterExchange, Authentication authentication) {
@@ -48,9 +52,9 @@ public class ReactiveOAuth2SuccessHandler implements ServerAuthenticationSuccess
                             .build());
 
                     // 리다이렉션 처리
-                    String redirectUrl = "http://127.0.0.1:5173?token=" + token;
+                    String finalRedirectUrl = redirectUrl + "?token=" + token;
                     exchange.getResponse().setStatusCode(HttpStatus.FOUND);
-                    exchange.getResponse().getHeaders().setLocation(URI.create(redirectUrl));
+                    exchange.getResponse().getHeaders().setLocation(URI.create(finalRedirectUrl));
 
                     return exchange.getResponse().setComplete();
                 })

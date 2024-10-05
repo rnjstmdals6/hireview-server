@@ -11,6 +11,7 @@ public class PostResponseDTO {
     private Long id;
     private Long views;
     private Long likes;
+    private Long comments;
     private Boolean isLiked;
     private String category;
     private String title;
@@ -22,7 +23,7 @@ public class PostResponseDTO {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); // 년-월-일 시:분
 
-    public PostResponseDTO(Post post, User user, Long likes) {
+    public PostResponseDTO(Post post, User user, Long likes, Long comments) {
         this.id = post.getId();
         this.category = post.getCategory();
         this.title = post.getTitle();
@@ -33,5 +34,6 @@ public class PostResponseDTO {
         this.createdAt = post.getCreatedAt().format(FORMATTER); // LocalDateTime을 포맷팅
         this.views = post.getViews();
         this.likes = likes;
+        this.comments = comments;
     }
 }

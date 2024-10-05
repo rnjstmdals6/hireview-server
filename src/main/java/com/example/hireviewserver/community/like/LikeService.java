@@ -18,7 +18,7 @@ public class LikeService {
         return principal
                 .map(Principal::getName)
                 .flatMap(userService::findUserIdByEmail) // 이메일을 통해 유저 ID 조회
-                .flatMap(userId -> likeRepository.existsByPostIdAndUserId(postId, userId)
+                .flatMap(userId -> existsByPostIdAndUserId(postId, userId)
                         .flatMap(exists -> {
                             if (!exists) {
                                 Like like = new Like(postId, userId);
@@ -34,6 +34,13 @@ public class LikeService {
     }
 
     public Mono<Boolean> existsByPostIdAndUserId(Long postId, Long userId) {
-        return likeRepository.existsByPostIdAndUserId(postId, userId);
+        return likeRepository.countByPostIdAndUserId(postId, userId)
+                .map(count -> count > 0);
+    }
+
+    public Mono<Boolean> existsByPostIdAndEmail(Long postId, String email) {
+        return userService.findUserIdByEmail(email)
+                .flatMap(userId -> likeRepository.countByPostIdAndUserId(postId, userId))
+                .map(count -> count > 0);
     }
 }
