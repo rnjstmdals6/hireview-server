@@ -32,26 +32,41 @@ public class ReactiveOAuth2SuccessHandler implements ServerAuthenticationSuccess
         ServerWebExchange exchange = webFilterExchange.getExchange();
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
 
-        // 인증된 사용자 정보에서 속성 추출
         Map<String, Object> attributes = oauthToken.getPrincipal().getAttributes();
-        String email = (String) attributes.get("email");
-        String name = (String) attributes.get("name");
-        String picture = (String) attributes.get("picture");
+        String email;
+        String name;
+        String picture;
 
-        // 사용자 정보 생성/조회 후 처리
+        if (oauthToken.getAuthorizedClientRegistrationId().equals("google")) {
+            email = (String) attributes.get("email");
+            name = (String) attributes.get("name");
+            picture = (String) attributes.get("picture");
+        } else if (oauthToken.getAuthorizedClientRegistrationId().equals("kakao")) {
+            Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+            Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
+
+            email = (String) kakaoAccount.get("email");
+            name = (String) properties.get("nickname");
+
+            picture = (String) properties.getOrDefault("profile_image", "");
+            if (picture == null || picture.isEmpty()) {
+                picture = "";
+            }
+        } else {
+            return Mono.error(new IllegalStateException("지원하지 않는 로그인 타입입니다."));
+        }
+
+        // 사용자 정보 처리 및 JWT 생성
         return userService.findOrCreateUser(email, name, picture)
                 .flatMap(user -> {
-                    // JWT 토큰 생성
                     String token = jwtTokenProvider.generateToken(user.getEmail());
                     String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
 
-                    // 쿠키에 refreshToken 저장
                     exchange.getResponse().addCookie(ResponseCookie.from("refreshToken", refreshToken)
                             .httpOnly(true)
                             .path("/")
                             .build());
 
-                    // 리다이렉션 처리
                     String finalRedirectUrl = redirectUrl + "?token=" + token;
                     exchange.getResponse().setStatusCode(HttpStatus.FOUND);
                     exchange.getResponse().getHeaders().setLocation(URI.create(finalRedirectUrl));

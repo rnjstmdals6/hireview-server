@@ -2,7 +2,7 @@ spring:
   main:
     web-application-type: reactive  # WebFlux를 사용하여 리액티브한 애플리케이션으로 설정
   r2dbc:
-    url: r2dbc:mysql://0.0.0.0:3306/hireviewdb
+    url: r2dbc:mariadb://0.0.0.0:3306/hireviewdb
     username: hireviewuser
     password: rnjs6078
 
@@ -17,6 +17,22 @@ spring:
             scope:
               - email
               - profile
+          kakao:
+            client-id: b730b64ca5ff962d7ccde645597a0d2a
+            client-secret: ""
+            redirect-uri: "http://localhost:8080/login/oauth2/code/kakao"
+            authorization-grant-type: authorization_code
+            scope:
+              - profile_nickname
+              - account_email
+            client-name: Kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+            user-info-authentication-method: POST
   jwt:
     secret: RFV6VlY4LX5uKWZWV0gjX1A5KCZBZ2lROz9QPFdKMT87blNDWE9me0g+VT0lYjgxTU9NKGoza3hRdCZyJ29R
     expiration: 3600000
