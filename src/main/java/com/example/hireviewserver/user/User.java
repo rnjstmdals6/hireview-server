@@ -7,6 +7,8 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.LocalDate;
+
 @Table("users")
 @Getter
 @AllArgsConstructor
@@ -23,13 +25,15 @@ public class User {
     @Setter
     private String job;
     private Integer token;
+    private LocalDate lastAttendanceDate;
 
     public User(String email, String name, String picture) {
         this.email = email;
         this.name = name;
         this.picture = picture;
         this.job = "프론드엔드 개발자";
-        this.token = 10;
+        this.token = 0;
+        this.lastAttendanceDate = LocalDate.now().minusDays(1);
     }
 
     public void decreaseToken() {
@@ -40,4 +44,13 @@ public class User {
         }
     }
 
+    public void checkAttendance() {
+        LocalDate today = LocalDate.now();
+
+        // 오늘 날짜와 마지막 출석 날짜를 비교
+        if (!today.equals(this.lastAttendanceDate)) {
+            this.token += 10;
+            this.lastAttendanceDate = today;
+        }
+    }
 }

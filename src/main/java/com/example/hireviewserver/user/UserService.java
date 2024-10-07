@@ -15,7 +15,12 @@ public class UserService {
     // 유저를 이메일로 찾거나 없으면 생성
     public Mono<User> findOrCreateUser(String email, String name, String picture) {
         return userRepository.findByEmail(email)
-                .switchIfEmpty(userRepository.save(new User(email, name, picture)));
+                .doOnNext(User::checkAttendance)
+                .switchIfEmpty(
+                        userRepository.save(new User(email, name, picture))
+                                .doOnNext(User::checkAttendance)
+                )
+                .flatMap(userRepository::save);
     }
 
     // 유저 ID로 찾기
