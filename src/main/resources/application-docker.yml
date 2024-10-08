@@ -49,4 +49,9 @@ gemini:
 
 
 app:
+  base-url: "https://hireview.store"
   redirect-url: "https://hireview.net"
+
+profile:
+  image:
+    upload-dir: /uploads

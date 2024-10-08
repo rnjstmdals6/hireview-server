@@ -21,6 +21,7 @@ public class User {
     private String email;
     @Setter
     private String name;
+    @Setter
     private String picture;
     @Setter
     private String job;

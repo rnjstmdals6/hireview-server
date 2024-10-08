@@ -23,6 +23,8 @@ services:
       SPRING_PROFILES_ACTIVE: docker
     depends_on:
       - mariadb-container  # 의존성을 MariaDB 컨테이너로 변경
+    volumes:
+      - ./uploads:/uploads
 
 volumes:
   mariadb_data:

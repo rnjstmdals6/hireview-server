@@ -1,6 +1,9 @@
 package com.example.hireviewserver.user;
 
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
 import java.security.Principal;
@@ -36,6 +39,13 @@ public class UserController {
         return principal
                 .map(Principal::getName)
                 .flatMap(email -> userService.setUserJob(email, dto));
+    }
+
+    @PutMapping(value = "/api/v1/user/profile-picture", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Mono<Void> setUserProfilePicture(@RequestPart("file") FilePart file, Mono<Principal> principal) {
+        return principal
+                .map(Principal::getName)
+                .flatMap(email -> userService.saveUserProfilePicture(email, file));
     }
 
     @PutMapping("/api/v1/user/token")
