@@ -113,11 +113,10 @@ public class FeedbackService {
                                     FeedbackResponseDTO responseDTO = new FeedbackResponseDTO();
                                     responseDTO.setId(feedback.getId());
                                     responseDTO.setScore(feedback.getScore());
-                                    responseDTO.setQuestion(question.getQuestion());
+                                    responseDTO.setQuestion(question.getContent());
                                     responseDTO.setFeedback(feedback.getFeedback());
                                     responseDTO.setAnswer(feedback.getAnswer());
                                     responseDTO.setPriority(question.getPriority());
-                                    responseDTO.setJob(question.getJob());
                                     responseDTO.setDifficulty(question.getDifficulty());
                                     return responseDTO;
                                 })
@@ -144,7 +143,7 @@ public class FeedbackService {
                         Feedback feedback = pair.getT1();
                         Question question = pair.getT2();
 
-                        if ("공통 인성면접".equals(question.getJob())) {
+                        if (question.getJobId() == 1L) {
                             personalityScoreSum += feedback.getScore();
                             personalityCount++;
                         } else {

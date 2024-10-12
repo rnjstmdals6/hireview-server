@@ -1,6 +1,5 @@
 package com.example.hireviewserver.interview.feedback;
 
-import com.example.hireviewserver.common.enums.Job;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

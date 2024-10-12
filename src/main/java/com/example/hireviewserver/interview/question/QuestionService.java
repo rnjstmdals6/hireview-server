@@ -13,13 +13,13 @@ public class QuestionService {
 
     public Flux<QuestionResponseDTO> getRandomQuestionsByJob(String job) {
         return questionRepository.findRandomQuestionsByJob(job)
-                .map(QuestionResponseDTO::new);
+                .map(question -> new QuestionResponseDTO(question, job));
     }
 
     public Mono<PageResponseDTO<QuestionResponseDTO>> getAllQuestionsByJob(String job, int page, int size) {
         Mono<Long> total = questionRepository.countByJob(job);
         Flux<QuestionResponseDTO> questions = questionRepository.findAllByJobWithPagination(job, size, page * size)
-                .map(QuestionResponseDTO::new);
+                .map(question -> new QuestionResponseDTO(question, job));
 
         return total.zipWith(questions.collectList(), (totalElements, questionList) ->
                 new PageResponseDTO<>(questionList, totalElements, page)

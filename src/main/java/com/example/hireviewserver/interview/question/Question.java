@@ -1,26 +1,20 @@
 package com.example.hireviewserver.interview.question;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
-@Table("question")
+@Table("questions")
 @Getter @NoArgsConstructor
+@AllArgsConstructor
 public class Question {
     @Id
     private Long id;
-    private String job;
-    private String question;
-    private String answer;
+    private String content;
     private Integer priority;
     private Integer difficulty;
-
-    public Question(String job, String question, String answer, Integer priority, Integer difficulty) {
-        this.job = job;
-        this.question = question;
-        this.answer = answer;
-        this.priority = priority;
-        this.difficulty = difficulty;
-    }
+    private Long jobId;
+    private String tags;
 }
