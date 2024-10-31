@@ -20,8 +20,7 @@ public class PostResponseDTO {
     private String name;
     private String picture;
     private String createdAt;
-
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); // 년-월-일 시:분
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public PostResponseDTO(Post post, User user, Long likes, Long comments) {
         this.id = post.getId();
