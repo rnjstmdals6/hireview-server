@@ -10,8 +10,8 @@ import reactor.util.annotation.Nullable;
 @Repository
 public interface QuestionRepository extends ReactiveCrudRepository<Question, Long> {
 
-    @Query("SELECT * FROM questions WHERE job = :job ORDER BY RAND() LIMIT 2")
-    Flux<Question> findRandomQuestionsByJob(String job);
+    @Query("SELECT * FROM questions WHERE job_id = :jobId ORDER BY RAND() LIMIT 2")
+    Flux<Question> findRandomQuestionsByJobId(Long jobId);
 
     @Query("SELECT * FROM questions WHERE (:job IS NULL OR job = :job) LIMIT :limit OFFSET :offset")
     Flux<Question> findAllByJobWithPagination(@Nullable String job, int limit, int offset);

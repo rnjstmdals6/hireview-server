@@ -1,6 +1,7 @@
 package com.example.hireviewserver.interview.question;
 
 import com.example.hireviewserver.common.PageResponseDTO;
+import com.example.hireviewserver.interview.job.JobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -10,10 +11,13 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class QuestionService {
     private final QuestionRepository questionRepository;
-
-    public Flux<QuestionResponseDTO> getRandomQuestionsByJob(String job) {
-        return questionRepository.findRandomQuestionsByJob(job)
-                .map(question -> new QuestionResponseDTO(question, job));
+    private final JobService jobService;
+    public Flux<QuestionResponseDTO> getRandomQuestionsByJob(String jobName) {
+        return jobService.findIdByName(jobName)
+                .flatMapMany(jobId ->
+                        questionRepository.findRandomQuestionsByJobId(jobId)
+                                .map(question -> new QuestionResponseDTO(question, jobName))
+                );
     }
 
     public Mono<PageResponseDTO<QuestionResponseDTO>> getAllQuestionsByJob(String job, int page, int size) {

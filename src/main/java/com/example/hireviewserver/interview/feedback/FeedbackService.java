@@ -31,8 +31,8 @@ public class FeedbackService {
     private final QuestionService questionService;
 
     public Flux<String> getFeedbackByQuestion(FeedbackRequestDTO request, String email) {
-        String feedbackCommand = request.getJob() + " 전문 면접관처럼 질문에 대답을 잘했는지 상세하게 피드백 해줘." +
-                " 더해서 어떻게 답변하면 좋을지 추천해주고 예상 정답도 알려줘. 그리고 반드시 마지막 문장에 객관적이고 냉철하게 판단해서 '면접 점수: 몇점/10' 형식으로 표현해줘";
+        String feedbackCommand = request.getJob() + " as a professional interviewer, provide detailed feedback on how well the answer addresses the question." +
+                " Additionally, suggest ways to improve the answer, provide an ideal response, and make sure to include an objective score in the last sentence in the format 'Interview Score: X/10'.";
         String questionAndAnswer = "질문 : " + request.getQuestion() + " 답변 : " + request.getAnswer();
 
         GeminiRequestDTO.Content feedbackContent = GeminiRequestDTO.Content.builder()
@@ -97,7 +97,7 @@ public class FeedbackService {
     }
 
     private Double extractScore(String feedback) {
-        Pattern pattern = Pattern.compile("면접 점수: (\\d+)/10");
+        Pattern pattern = Pattern.compile("Interview Score: (\\d+)/10");
         Matcher matcher = pattern.matcher(feedback);
         if (matcher.find()) {
             return Double.parseDouble(matcher.group(1)); // 점수 추출
