@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class QuestionController {
@@ -28,5 +30,12 @@ public class QuestionController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "8") int size) {
         return questionService.getAllQuestionsByJob(job, page, size);
+    }
+
+    @GetMapping("/api/v1/questions/specializations")
+    @Operation(summary = "특정 직무에 관련된 고유한 특화 분야(태그) 목록을 반환합니다.",
+            description = "지정된 직무에 해당하는 모든 질문을 조회하여 중복되지 않는 고유한 특화 분야(태그) 목록을 반환합니다.")
+    public Mono<List<String>> getSpecializations(@RequestParam String job) {
+        return questionService.getUniqueTagsByJob(job);
     }
 }

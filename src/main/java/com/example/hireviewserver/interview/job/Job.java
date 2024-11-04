@@ -13,6 +13,6 @@ import org.springframework.data.relational.core.mapping.Table;
 public class Job {
     @Id
     private Long id;
-    private Integer categoryId;
+    private Long categoryId;
     private String name;
 }

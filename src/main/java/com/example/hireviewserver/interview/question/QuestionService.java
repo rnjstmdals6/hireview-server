@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class QuestionService {
@@ -32,5 +34,14 @@ public class QuestionService {
 
     public Mono<Question> findQuestionById(Long questionId) {
         return questionRepository.findById(questionId);
+    }
+
+    public Mono<List<String>> getUniqueTagsByJob(String job) {
+        return jobService.findIdByName(job)
+                .flatMapMany(questionRepository::findDistinctTagsByJobId)
+                .flatMap(tags -> Flux.fromArray(tags.split(",")))
+                .map(String::trim)
+                .distinct()
+                .collectList();
     }
 }

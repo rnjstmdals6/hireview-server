@@ -18,4 +18,7 @@ public interface QuestionRepository extends ReactiveCrudRepository<Question, Lon
 
     @Query("SELECT COUNT(*) FROM questions WHERE job = :job")
     Mono<Long> countByJob(String job);
+
+    @Query("SELECT DISTINCT tags FROM questions WHERE job_id = :jobId")
+    Flux<String> findDistinctTagsByJobId(Long jobId);
 }
