@@ -18,14 +18,14 @@ public class QuestionService {
         return jobService.findIdByName(jobName)
                 .flatMapMany(jobId ->
                         questionRepository.findRandomQuestionsByJobId(jobId)
-                                .map(question -> new QuestionResponseDTO(question, jobName))
+                                .map(QuestionResponseDTO::new)
                 );
     }
 
-    public Mono<PageResponseDTO<QuestionResponseDTO>> getAllQuestionsByJob(String job, int page, int size) {
-        Mono<Long> total = questionRepository.countByJob(job);
-        Flux<QuestionResponseDTO> questions = questionRepository.findAllByJobWithPagination(job, size, page * size)
-                .map(question -> new QuestionResponseDTO(question, job));
+    public Mono<PageResponseDTO<QuestionResponseDTO>> findAllByJobAndTagWithPagination(Long jobId, String tag, int page, int size) {
+        Mono<Long> total = questionRepository.countByJobId(jobId);
+        Flux<QuestionResponseDTO> questions = questionRepository.findAllByJobIdAndTagWithPagination(jobId, tag, size, page * size)
+                .map(QuestionResponseDTO::new);
 
         return total.zipWith(questions.collectList(), (totalElements, questionList) ->
                 new PageResponseDTO<>(questionList, totalElements, page)

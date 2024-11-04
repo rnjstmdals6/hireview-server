@@ -26,10 +26,11 @@ public class QuestionController {
     @GetMapping("/api/v1/questions/all")
     @Operation(summary = "직무에 관련된 모든 질문을 반환한다.")
     public Mono<PageResponseDTO<QuestionResponseDTO>> getAllQuestionsByJob(
-            @RequestParam String job,
+            @RequestParam Long jobId,
+            @RequestParam(required = false) String tag,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "8") int size) {
-        return questionService.getAllQuestionsByJob(job, page, size);
+        return questionService.findAllByJobAndTagWithPagination(jobId, tag, page, size);
     }
 
     @GetMapping("/api/v1/questions/specializations")

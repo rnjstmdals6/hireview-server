@@ -13,11 +13,11 @@ public interface QuestionRepository extends ReactiveCrudRepository<Question, Lon
     @Query("SELECT * FROM questions WHERE job_id = :jobId ORDER BY RAND() LIMIT 2")
     Flux<Question> findRandomQuestionsByJobId(Long jobId);
 
-    @Query("SELECT * FROM questions WHERE (:job IS NULL OR job = :job) LIMIT :limit OFFSET :offset")
-    Flux<Question> findAllByJobWithPagination(@Nullable String job, int limit, int offset);
+    @Query("SELECT * FROM questions WHERE job_id = :jobId AND (IFNULL(:tag, '') = '' OR tags LIKE CONCAT('%', :tag, '%')) LIMIT :limit OFFSET :offset")
+    Flux<Question> findAllByJobIdAndTagWithPagination(Long jobId, @Nullable String tag, int limit, int offset);
 
-    @Query("SELECT COUNT(*) FROM questions WHERE job = :job")
-    Mono<Long> countByJob(String job);
+    @Query("SELECT COUNT(*) FROM questions WHERE job_id = :jobId")
+    Mono<Long> countByJobId(Long jobId);
 
     @Query("SELECT DISTINCT tags FROM questions WHERE job_id = :jobId")
     Flux<String> findDistinctTagsByJobId(Long jobId);

@@ -6,14 +6,14 @@ import lombok.Setter;
 @Getter @Setter
 public class QuestionResponseDTO {
     private Long id;
-    private String job;
+    private Long jobId;
     private String question;
     private Integer priority;
     private Integer difficulty;
     private String tags;
 
-    public QuestionResponseDTO(Question question, String job) {
-        this.job = job;
+    public QuestionResponseDTO(Question question) {
+        this.jobId = question.getJobId();
         this.question = question.getContent();
         this.id = question.getId();
         this.priority = question.getPriority();
