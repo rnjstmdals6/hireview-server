@@ -25,18 +25,16 @@ public class QuestionController {
 
     @GetMapping("/api/v1/questions/all")
     @Operation(summary = "직무에 관련된 모든 질문을 반환한다.")
-    public Mono<PageResponseDTO<QuestionResponseDTO>> getAllQuestionsByJob(
+    public Flux<QuestionResponseDTO> getAllQuestionsByJob(
             @RequestParam Long jobId,
-            @RequestParam(required = false) String tag,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int size) {
-        return questionService.findAllByJobAndTagWithPagination(jobId, tag, page, size);
+            @RequestParam(required = false) String tag) {
+        return questionService.findAllByJobAndTag(jobId, tag);
     }
 
     @GetMapping("/api/v1/questions/specializations")
     @Operation(summary = "특정 직무에 관련된 고유한 특화 분야(태그) 목록을 반환합니다.",
             description = "지정된 직무에 해당하는 모든 질문을 조회하여 중복되지 않는 고유한 특화 분야(태그) 목록을 반환합니다.")
-    public Mono<List<String>> getSpecializations(@RequestParam String job) {
-        return questionService.getUniqueTagsByJob(job);
+    public Mono<List<String>> getSpecializations(@RequestParam Long jobId) {
+        return questionService.getUniqueTagsByJob(jobId);
     }
 }

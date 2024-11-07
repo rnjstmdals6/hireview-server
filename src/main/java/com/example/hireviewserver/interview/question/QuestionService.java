@@ -1,6 +1,5 @@
 package com.example.hireviewserver.interview.question;
 
-import com.example.hireviewserver.common.PageResponseDTO;
 import com.example.hireviewserver.interview.job.JobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,23 +21,17 @@ public class QuestionService {
                 );
     }
 
-    public Mono<PageResponseDTO<QuestionResponseDTO>> findAllByJobAndTagWithPagination(Long jobId, String tag, int page, int size) {
-        Mono<Long> total = questionRepository.countByJobId(jobId);
-        Flux<QuestionResponseDTO> questions = questionRepository.findAllByJobIdAndTagWithPagination(jobId, tag, size, page * size)
+    public Flux<QuestionResponseDTO> findAllByJobAndTag(Long jobId, String tag) {
+        return questionRepository.findByJobIdAndTag(jobId, tag)
                 .map(QuestionResponseDTO::new);
-
-        return total.zipWith(questions.collectList(), (totalElements, questionList) ->
-                new PageResponseDTO<>(questionList, totalElements, page)
-        );
     }
 
     public Mono<Question> findQuestionById(Long questionId) {
         return questionRepository.findById(questionId);
     }
 
-    public Mono<List<String>> getUniqueTagsByJob(String job) {
-        return jobService.findIdByName(job)
-                .flatMapMany(questionRepository::findDistinctTagsByJobId)
+    public Mono<List<String>> getUniqueTagsByJob(Long jobId) {
+        return questionRepository.findDistinctTagsByJobId(jobId)
                 .flatMap(tags -> Flux.fromArray(tags.split(",")))
                 .map(String::trim)
                 .distinct()
