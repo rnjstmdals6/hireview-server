@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,9 +32,18 @@ public class FeedbackService {
     private final QuestionService questionService;
 
     public Flux<String> getFeedbackByQuestion(FeedbackRequestDTO request, String email) {
-        String feedbackCommand = request.getJob() + " as a professional interviewer, provide detailed feedback on how well the answer addresses the question." +
-                " Additionally, suggest ways to improve the answer, provide an ideal response, and make sure to include an objective score in the last sentence in the format 'Interview Score: X/10'.";
-        String questionAndAnswer = "질문 : " + request.getQuestion() + " 답변 : " + request.getAnswer();
+        // 평가 기준을 명확히 하여 점수가 엄격하게 주어지도록 함
+        String feedbackCommand = request.getJob() + " as a professional interviewer, provide a detailed, objective feedback on the answer based on the following criteria:" +
+                " (1) Accuracy: How accurate and relevant is the answer to the question?" +
+                " (2) Completeness: Does the answer cover all important aspects?" +
+                " (3) Clarity: Is the answer well-organized and easy to understand?" +
+                " (4) Originality: Does the answer demonstrate unique insight?" +
+                " (5) Conciseness: Is the answer clear without unnecessary information?" +
+                " Deduct points for each area where the answer is lacking." +
+                " Suggest specific ways to improve each aspect and provide an ideal answer." +
+                " Assign a final score out of 10 based on the overall performance with the following format 'Interview Score: X/10'. Be conservative in scoring, with 10 being excellent and 1 being very poor.";
+
+        String questionAndAnswer = "Question : " + request.getQuestion() + " Answer : " + request.getAnswer();
 
         GeminiRequestDTO.Content feedbackContent = GeminiRequestDTO.Content.builder()
                 .role("user")
@@ -53,16 +63,28 @@ public class FeedbackService {
                 .contents(List.of(feedbackContent, questionAnswerContent))
                 .build();
 
-        StringBuilder finalResponse = new StringBuilder();
         return geminiService.generateContentStream(requestDTO)
-                .doOnNext(response -> {
-                    String parsedText = extractTextFromResponse(response);
-                    finalResponse.append(parsedText);
-                })
+                .map(this::extractTextFromResponse) // JSON에서 텍스트만 추출
                 .doOnComplete(() -> {
-                    Double score = extractScore(finalResponse.toString());
-                    eventPublisher.publishEvent(new FeedbackSaveEvent(this, finalResponse.toString(), score, request.getQuestionId(), email, request.getAnswer()));
+                    geminiService.generateContentStream(requestDTO)
+                            .collectList()
+                            .subscribe(fullResponses -> {
+                                String completeResponse = String.join("", fullResponses);
+                                Double score = extractScore(completeResponse);
+                                eventPublisher.publishEvent(new FeedbackSaveEvent(
+                                        this, completeResponse, score, request.getQuestionId(), email, request.getAnswer()
+                                ));
+                            });
                 });
+    }
+
+    private Double extractScore(String feedback) {
+        Pattern pattern = Pattern.compile("Interview Score: (\\d+)/10");
+        Matcher matcher = pattern.matcher(feedback);
+        if (matcher.find()) {
+            return Double.parseDouble(matcher.group(1)); // 점수 추출
+        }
+        return 1.0;
     }
 
     private String extractTextFromResponse(String response) {
@@ -74,16 +96,12 @@ public class FeedbackService {
             for (int i = 0; i < candidates.length(); i++) {
                 JSONObject candidate = candidates.getJSONObject(i);
 
-                // content 필드가 존재하는지 확인
                 if (candidate.has("content")) {
                     JSONObject content = candidate.getJSONObject("content");
-
-                    // parts 필드가 존재하는지 확인
                     if (content.has("parts")) {
                         JSONArray parts = content.getJSONArray("parts");
-
                         for (int j = 0; j < parts.length(); j++) {
-                            feedbackText.append(parts.getJSONObject(j).getString("text")); // text 필드 추출
+                            feedbackText.append(parts.getJSONObject(j).getString("text")); // 텍스트 필드를 추가
                         }
                     }
                 }
@@ -92,18 +110,10 @@ public class FeedbackService {
             return feedbackText.toString();
         } catch (JSONException e) {
             e.printStackTrace();
-            return ""; // 파싱 오류 시 빈 문자열 반환
+            return ""; // 오류 발생 시 빈 문자열 반환
         }
     }
 
-    private Double extractScore(String feedback) {
-        Pattern pattern = Pattern.compile("Interview Score: (\\d+)/10");
-        Matcher matcher = pattern.matcher(feedback);
-        if (matcher.find()) {
-            return Double.parseDouble(matcher.group(1)); // 점수 추출
-        }
-        return 1.0;
-    }
 
     public Mono<PageResponseDTO<FeedbackResponseDTO>> getAllFeedback(int page, int size, String email) {
         return userService.findUserIdByEmail(email)

@@ -17,7 +17,7 @@ public class Feedback {
     private final String answer;
     private final Long questionId;
     private final Long userId;
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
 
     public Feedback(Double score, String feedback, String answer, Long questionId, Long userId) {
         this.score = score;

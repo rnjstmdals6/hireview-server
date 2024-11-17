@@ -15,7 +15,7 @@ import java.security.Principal;
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
-    @PostMapping(value = "/api/v1/feedback/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @PostMapping(value = "/api/v1/feedback/stream")
     public Flux<String> getFeedbackByQuestion(@RequestBody FeedbackRequestDTO request, Mono<Principal> principal) {
         return principal
                 .map(Principal::getName)
