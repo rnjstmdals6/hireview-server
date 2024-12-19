@@ -30,10 +30,9 @@ public class PostService {
         Mono<Long> total = postRepository.countByCategory(category);
 
         Flux<PostResponseDTO> posts = postRepository.findAllByCategoryWithPagination(category, size, page * size)
-                .flatMap(post -> {
+                .concatMap(post -> {
                     if (post.getUserId() == null) {
-                        // 탈퇴한 유저이거나 userId가 null인 경우 처리
-                        return Mono.empty(); // 포스트를 제외하거나 기본 처리
+                        return Mono.empty();
                     }
 
                     Mono<Long> likes = likeService.getLikeCount(post.getId());
@@ -41,7 +40,7 @@ public class PostService {
                     return userService.findUserById(post.getUserId())
                             .flatMap(user -> {
                                 if (user == null) {
-                                    return Mono.empty();  // 유저가 탈퇴한 경우 그 포스트는 제외
+                                    return Mono.empty();
                                 }
                                 return Mono.zip(Mono.just(post), Mono.just(user), likes, comments)
                                         .map(tuple -> {
@@ -58,7 +57,6 @@ public class PostService {
         return total.zipWith(posts.collectList(), (totalElements, postList) ->
                 new PageResponseDTO<>(postList, totalElements, page));
     }
-
 
     public Mono<PostResponseDTO> createPost(PostRequestDTO dto, Mono<Principal> principal) {
         return principal

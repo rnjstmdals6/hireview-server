@@ -11,7 +11,7 @@ import reactor.util.annotation.Nullable;
 public interface PostRepository extends ReactiveCrudRepository<Post, Long> {
     @Query("SELECT COUNT(*) FROM posts WHERE (:category IS NULL OR category = :category)")
     Mono<Long> countByCategory(@Nullable String category);
-    @Query("SELECT * FROM posts WHERE (:category IS NULL OR category = :category) ORDER BY created_at DESC LIMIT :limit OFFSET :offset")
+    @Query("SELECT * FROM posts WHERE (:category IS NULL OR category = :category) ORDER BY created_at DESC, id DESC LIMIT :limit OFFSET :offset")
     Flux<Post> findAllByCategoryWithPagination(@Nullable String category, int limit, int offset);
     // 특정 사용자의 게시글 개수
     Mono<Long> countAllByUserId(Long userId);
