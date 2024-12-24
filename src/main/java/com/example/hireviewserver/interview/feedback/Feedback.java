@@ -13,15 +13,15 @@ public class Feedback {
     private Long id;
 
     private final Double score;
-    private final String feedback;
+    private final String content;
     private final String answer;
     private final Long questionId;
     private final Long userId;
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
 
-    public Feedback(Double score, String feedback, String answer, Long questionId, Long userId) {
+    public Feedback(Double score, String content, String answer, Long questionId, Long userId) {
         this.score = score;
-        this.feedback = feedback;
+        this.content = content;
         this.answer = answer;
         this.questionId = questionId;
         this.userId = userId;

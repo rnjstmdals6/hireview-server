@@ -101,3 +101,16 @@ CREATE TABLE likes (
                        FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE SET NULL,
                        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
+
+-- ===================================
+-- FollowUpQuestions 테이블 생성
+-- ===================================
+CREATE TABLE follow_up_questions (
+                                     id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                                     question_id BIGINT NOT NULL,
+                                     user_id BIGINT NOT NULL,
+                                     content TEXT NOT NULL,
+                                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                     FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE,
+                                     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

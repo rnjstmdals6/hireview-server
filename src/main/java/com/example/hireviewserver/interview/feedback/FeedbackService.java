@@ -31,9 +31,17 @@ public class FeedbackService {
     private final QuestionService questionService;
 
     public Flux<String> getFeedbackByQuestion(FeedbackRequestDTO request, String email) {
-        String feedbackCommand = request.getJob() + " as a professional interviewer, provide detailed feedback on how well the answer addresses the question." +
-                " Additionally, suggest ways to improve the answer, provide an ideal response, and make sure to include an objective score in the last sentence in the format 'Interview Score: X/10'.";
-        String questionAndAnswer = "질문 : " + request.getQuestion() + " 답변 : " + request.getAnswer();
+        String feedbackCommand = request.getJob() + " as a professional interviewer, provide a detailed, objective feedback on the answer based on the following criteria:" +
+                " (1) Accuracy: How accurate and relevant is the answer to the question?" +
+                " (2) Completeness: Does the answer cover all important aspects?" +
+                " (3) Clarity: Is the answer well-organized and easy to understand?" +
+                " (4) Originality: Does the answer demonstrate unique insight?" +
+                " (5) Conciseness: Is the answer clear without unnecessary information?" +
+                " Deduct points for each area where the answer is lacking." +
+                " Suggest specific ways to improve each aspect and provide an ideal answer." +
+                " Assign a final score out of 10 based on the overall performance with the following format 'Interview Score: X/10'. Be conservative in scoring, with 10 being excellent and 1 being very poor.";
+
+        String questionAndAnswer = "Question : " + request.getQuestion() + " Answer : " + request.getAnswer();
 
         GeminiRequestDTO.Content feedbackContent = GeminiRequestDTO.Content.builder()
                 .role("user")
@@ -114,7 +122,7 @@ public class FeedbackService {
                                     responseDTO.setId(feedback.getId());
                                     responseDTO.setScore(feedback.getScore());
                                     responseDTO.setQuestion(question.getContent());
-                                    responseDTO.setFeedback(feedback.getFeedback());
+                                    responseDTO.setFeedback(feedback.getContent());
                                     responseDTO.setAnswer(feedback.getAnswer());
                                     responseDTO.setPriority(question.getPriority());
                                     responseDTO.setDifficulty(question.getDifficulty());
