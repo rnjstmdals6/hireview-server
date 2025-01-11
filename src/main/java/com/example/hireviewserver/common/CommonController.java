@@ -15,4 +15,5 @@ public class CommonController {
     public Mono<JobResponseDTO> getJobList() {
         return commonService.getJobs();
     }
+
 }

@@ -17,7 +17,8 @@ public class Feedback {
     private final String answer;
     private final Long questionId;
     private final Long userId;
-    private final LocalDateTime createdAt;
+    // R2DBC LocalDateTime > final (x)
+    private LocalDateTime createdAt;
 
     public Feedback(Double score, String content, String answer, Long questionId, Long userId) {
         this.score = score;

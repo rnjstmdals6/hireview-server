@@ -1,6 +1,9 @@
 package com.example.hireviewserver.user;
 
+import com.sksamuel.scrimage.ImmutableImage;
+import com.sksamuel.scrimage.webp.WebpWriter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     @Value("${profile.image.upload-dir}")
     private String uploadDir;
@@ -86,8 +90,8 @@ public class UserService {
     }
 
     public Mono<Void> saveUserProfilePicture(String email, FilePart filePart) {
-        String fileName = UUID.randomUUID() + "_" + filePart.filename();
-        Path filePath = Paths.get(uploadDir, fileName);
+        String webpFileName = UUID.randomUUID() + ".webp";
+        Path webpFilePath = Paths.get(uploadDir, webpFileName);
 
         return userRepository.findByEmail(email)
                 .flatMap(user -> {
@@ -98,29 +102,30 @@ public class UserService {
                                     try {
                                         Files.deleteIfExists(oldFilePath);
                                     } catch (IOException e) {
-                                        System.err.println("Failed to delete old profile picture: " + e.getMessage());
+                                        log.error("Failed to delete old profile picture: " + e.getMessage());
                                     }
                                 })
-                                .subscribeOn(Schedulers.boundedElastic()) // 블로킹 작업을 별도의 스레드에서 실행
+                                .subscribeOn(Schedulers.boundedElastic())
                                 .thenReturn(user);
                     }
                     return Mono.just(user);
                 })
-                .flatMap(user -> Mono.fromRunnable(() -> {
+                .flatMap(user -> filePart.transferTo(webpFilePath)
+                        .then(Mono.fromRunnable(() -> {
                             try {
-                                Files.createDirectories(filePath.getParent());
+                                ImmutableImage.loader()
+                                        .fromPath(webpFilePath)
+                                        .output(WebpWriter.DEFAULT.withLossless(), webpFilePath.toFile());
                             } catch (IOException e) {
-                                throw new RuntimeException("Failed to create directory for profile picture", e);
+                                throw new RuntimeException("Failed to convert image to WEBP format", e);
                             }
-                        })
-                        .subscribeOn(Schedulers.boundedElastic()) // 디렉터리 생성도 별도의 스레드에서 실행
-                        .then(Mono.defer(() -> filePart.transferTo(filePath)))
+                        }).subscribeOn(Schedulers.boundedElastic()))
                         .then(Mono.defer(() -> {
-                            String fileUrl = baseUrl + "/uploads/" + fileName;
+                            String fileUrl = baseUrl + "/uploads/" + webpFileName;
                             user.setPicture(fileUrl);
                             return userRepository.save(user);
                         })))
-                .subscribeOn(Schedulers.boundedElastic()) // 파일 저장과 DB 업데이트도 별도의 스레드에서 실행
+                .subscribeOn(Schedulers.boundedElastic())
                 .then();
     }
 }

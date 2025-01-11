@@ -114,3 +114,11 @@ CREATE TABLE follow_up_questions (
                                      FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE,
                                      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+CREATE TABLE user_suggestion (
+                                     id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                                     evaluation TEXT NOT NULL,
+                                     user_id BIGINT NOT NULL,
+                                     content TEXT NOT NULL,
+                                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
