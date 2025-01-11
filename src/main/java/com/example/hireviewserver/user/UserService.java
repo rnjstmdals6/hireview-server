@@ -101,11 +101,11 @@ public class UserService {
                         return Mono.fromRunnable(() -> {
                                     try {
                                         Files.deleteIfExists(oldFilePath);
+                                        log.info("Deleted old profile picture: " + oldFilePath);
                                     } catch (IOException e) {
                                         log.error("Failed to delete old profile picture: " + e.getMessage());
                                     }
-                                })
-                                .subscribeOn(Schedulers.boundedElastic())
+                                }).subscribeOn(Schedulers.boundedElastic())
                                 .thenReturn(user);
                     }
                     return Mono.just(user);
@@ -113,16 +113,24 @@ public class UserService {
                 .flatMap(user -> filePart.transferTo(webpFilePath)
                         .then(Mono.fromRunnable(() -> {
                             try {
-                                ImmutableImage.loader()
-                                        .fromPath(webpFilePath)
-                                        .output(WebpWriter.DEFAULT.withLossless(), webpFilePath.toFile());
-                            } catch (IOException e) {
+                                log.info("Converting image to WEBP using ProcessBuilder: " + webpFilePath);
+                                ProcessBuilder processBuilder = new ProcessBuilder("/usr/bin/cwebp", webpFilePath.toString(), "-o", webpFilePath.toString());
+                                processBuilder.redirectErrorStream(true);
+
+                                Process process = processBuilder.start();
+                                int exitCode = process.waitFor();
+                                if (exitCode != 0) {
+                                    throw new RuntimeException("Failed to convert image to WEBP format, exit code: " + exitCode);
+                                }
+                                log.info("Image converted to WEBP using ProcessBuilder: " + webpFilePath);
+                            } catch (IOException | InterruptedException e) {
                                 throw new RuntimeException("Failed to convert image to WEBP format", e);
                             }
                         }).subscribeOn(Schedulers.boundedElastic()))
                         .then(Mono.defer(() -> {
                             String fileUrl = baseUrl + "/uploads/" + webpFileName;
                             user.setPicture(fileUrl);
+                            log.info("Profile picture saved to: " + fileUrl);
                             return userRepository.save(user);
                         })))
                 .subscribeOn(Schedulers.boundedElastic())
