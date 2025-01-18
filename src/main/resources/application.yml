@@ -5,7 +5,6 @@ spring:
     url: r2dbc:mariadb://0.0.0.0:3306/hireviewdb
     username: hireviewuser
     password: rnjs6078
-
   security:
     oauth2:
       client:

@@ -32,7 +32,7 @@ public class User {
         this.email = email;
         this.name = name;
         this.picture = picture;
-        this.job = "프론드엔드 개발자";
+        this.job = "Pending";
         this.token = 0;
         this.lastAttendanceDate = LocalDate.now().minusDays(1);
     }

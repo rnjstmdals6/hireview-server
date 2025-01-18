@@ -1,22 +1,22 @@
 package com.example.hireviewserver.user;
 
+import com.example.hireviewserver.interview.feedback.FeedbackService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.security.Principal;
 
 @RestController
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
+    private final FeedbackService feedbackService;
     private final JwtTokenProvider jwtTokenProvider;
-
-    public UserController(UserService userService, JwtTokenProvider jwtTokenProvider) {
-        this.userService = userService;
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
 
     @GetMapping("/api/v1/user")
     public Mono<UserInfoResponseDTO> getUserInfo(Mono<Principal> principal) {
@@ -60,6 +60,15 @@ public class UserController {
         return principal
                 .map(Principal::getName)
                 .flatMap(userService::deleteUser);
+    }
+
+    @GetMapping("/api/v1/user/top5")
+    public Flux<UserRankingResponseDTO> getTop5Rankings() {
+        return feedbackService.getTop5Rankings();
+    }
+    @GetMapping("/api/v1/user/{name}")
+    public Mono<UserRankingResponseDTO> getUserRanking(String name) {
+        return feedbackService.getUserRanking(name);
     }
 
     @PostMapping("/api/token/v1/refresh")

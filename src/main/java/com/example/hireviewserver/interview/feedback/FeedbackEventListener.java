@@ -17,7 +17,7 @@ public class FeedbackEventListener {
     public void handleFeedbackSaveEvent(FeedbackSaveEvent event) {
         userService.findUserIdByEmail(event.getEmail())
                 .flatMap(userId -> {
-                    Feedback feedback = new Feedback(event.getScore(), event.getFeedback(), event.getAnswer(),event.getQuestionId(), userId);
+                    Feedback feedback = new Feedback(event.getScore(), event.getFeedback(), event.getAnswer(),event.getQuestionId(), userId, event.getAccuracy(), event.getCompleteness(), event.getLogicality());
                     return feedbackRepository.save(feedback);
                 })
                 .subscribe();

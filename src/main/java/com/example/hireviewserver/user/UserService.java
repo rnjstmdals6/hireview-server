@@ -1,7 +1,6 @@
 package com.example.hireviewserver.user;
 
-import com.sksamuel.scrimage.ImmutableImage;
-import com.sksamuel.scrimage.webp.WebpWriter;
+import com.example.hireviewserver.user.attendance.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
@@ -27,13 +27,16 @@ public class UserService {
 
 
     private final UserRepository userRepository;
-    // 유저를 이메일로 찾거나 없으면 생성
+    private final AttendanceService attendanceService;
     public Mono<User> findOrCreateUser(String email, String name, String picture) {
         return userRepository.findByEmail(email)
                 .doOnNext(User::checkAttendance)
                 .switchIfEmpty(
                         userRepository.save(new User(email, name, picture))
                                 .doOnNext(User::checkAttendance)
+                )
+                .flatMap(user -> attendanceService.markAttendance(user.getId())
+                        .thenReturn(user)
                 )
                 .flatMap(userRepository::save);
     }
@@ -51,6 +54,11 @@ public class UserService {
     // 유저 ID 가져오기
     public Mono<Long> findUserIdByEmail(String email) {
         return userRepository.findByEmail(email)
+                .map(User::getId);
+    }
+
+    public Mono<Long> findUserIdByName(String name) {
+        return userRepository.findByName(name)
                 .map(User::getId);
     }
 

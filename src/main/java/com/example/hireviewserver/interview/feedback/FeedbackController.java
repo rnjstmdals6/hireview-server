@@ -4,11 +4,13 @@ import com.example.hireviewserver.common.PageResponseDTO;
 import com.example.hireviewserver.community.post.PostResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.security.Principal;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,5 +42,12 @@ public class FeedbackController {
         return principal
                 .map(Principal::getName)
                 .flatMap(feedbackService::getFeedbackStat);
+    }
+
+    @GetMapping("/api/v2/feedback/stat")
+    public Mono<FeedbackAbilityDTO> getUserAverageStats(Mono<Principal> principal) {
+        return principal
+                .map(Principal::getName)
+                .flatMap(feedbackService::getUserAverageStats);
     }
 }

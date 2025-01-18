@@ -13,7 +13,7 @@ public class JwtAuthenticationFilter extends AuthenticationWebFilter {
     private final JwtTokenProvider jwtTokenProvider;
 
     public JwtAuthenticationFilter(ReactiveAuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider) {
-        super(authenticationManager); // ReactiveAuthenticationManager 전달
+        super(authenticationManager);
         this.jwtTokenProvider = jwtTokenProvider;
     }
     @Override
