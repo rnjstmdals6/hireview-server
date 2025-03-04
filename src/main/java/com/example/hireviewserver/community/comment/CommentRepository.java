@@ -11,7 +11,7 @@ public interface CommentRepository extends ReactiveCrudRepository<Comment, Long>
     @Query("SELECT COUNT(*) FROM comments WHERE post_id = :postId")
     Mono<Long> countByPostId(Long postId);
 
-    @Query("SELECT * FROM comments WHERE post_id = :postId LIMIT :limit OFFSET :offset")
+    @Query("SELECT * FROM comments WHERE post_id = :postId ORDER BY created_at ASC LIMIT :limit OFFSET :offset")
     Flux<Comment> findAllByPostIdWithPagination(Long postId, int limit, int offset);
 
     @Query("DELETE FROM comments WHERE id = :commentId AND user_id = :userId")

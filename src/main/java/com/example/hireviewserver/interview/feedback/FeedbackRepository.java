@@ -52,4 +52,6 @@ public interface FeedbackRepository extends ReactiveCrudRepository<Feedback, Lon
         WHERE user_id = :userId
     """)
     Mono<FeedbackAbilityDTO> findAverageStatsByUserId(@Param("userId") Long userId);
+
+    Mono<Long> countByUserId(Long userId);
 }

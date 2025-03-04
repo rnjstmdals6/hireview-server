@@ -49,7 +49,12 @@ public class PostService {
                                             Long likeCount = tuple.getT3();
                                             Long commentCount = tuple.getT4();
 
-                                            return new PostResponseDTO(postData, userData, likeCount, commentCount);
+                                            String content = postData.getDescription();
+                                            if (content != null && content.length() > 80) {
+                                                content = content.substring(0, 80) + "...";
+                                            }
+
+                                            return new PostResponseDTO(postData, userData, likeCount, commentCount, content);
                                         });
                             });
                 });

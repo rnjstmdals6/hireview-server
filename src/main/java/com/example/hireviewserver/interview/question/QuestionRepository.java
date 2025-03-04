@@ -10,7 +10,7 @@ import reactor.util.annotation.Nullable;
 @Repository
 public interface QuestionRepository extends ReactiveCrudRepository<Question, Long> {
 
-    @Query("SELECT * FROM questions WHERE job_id = :jobId ORDER BY RAND() LIMIT 2")
+    @Query("SELECT * FROM questions WHERE job_id = :jobId ORDER BY RAND() LIMIT 5")
     Flux<Question> findRandomQuestionsByJobId(Long jobId);
 
     @Query("SELECT * FROM questions WHERE job_id = :jobId AND (IFNULL(:tag, '') = '' OR tags LIKE CONCAT('%', :tag, '%')) ORDER BY RAND()")

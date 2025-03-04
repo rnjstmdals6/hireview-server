@@ -105,7 +105,7 @@ public class FeedbackService {
             return feedbackText.toString();
         } catch (JSONException e) {
             e.printStackTrace();
-            return ""; // 파싱 오류 시 빈 문자열 반환
+            return "";
         }
     }
 
@@ -125,22 +125,26 @@ public class FeedbackService {
 
     public Mono<PageResponseDTO<FeedbackResponseDTO>> getAllFeedback(int page, int size, String email) {
         return userService.findUserIdByEmail(email)
-                .flatMap(userId -> feedbackRepository.findAllByUserId(userId, size, page * size)
-                        .flatMap(feedback -> questionService.findQuestionById(feedback.getQuestionId()) // 질문 정보 조회
-                                .map(question -> {
-                                    FeedbackResponseDTO responseDTO = new FeedbackResponseDTO();
-                                    responseDTO.setId(feedback.getId());
-                                    responseDTO.setScore(feedback.getScore());
-                                    responseDTO.setQuestion(question.getContent());
-                                    responseDTO.setFeedback(feedback.getContent());
-                                    responseDTO.setAnswer(feedback.getAnswer());
-                                    responseDTO.setPriority(question.getPriority());
-                                    responseDTO.setDifficulty(question.getDifficulty());
-                                    return responseDTO;
-                                })
-                        )
-                        .collectList()
-                        .flatMap(feedbackList -> Mono.just(new PageResponseDTO<>(feedbackList, page, size)))
+                .flatMap(userId ->
+                        feedbackRepository.countByUserId(userId) // 전체 피드백 개수 조회
+                                .flatMap(totalElements ->
+                                        feedbackRepository.findAllByUserId(userId, size, page * size)
+                                                .flatMap(feedback -> questionService.findQuestionById(feedback.getQuestionId())
+                                                        .map(question -> {
+                                                            FeedbackResponseDTO responseDTO = new FeedbackResponseDTO();
+                                                            responseDTO.setId(feedback.getId());
+                                                            responseDTO.setScore(feedback.getScore());
+                                                            responseDTO.setQuestion(question.getContent());
+                                                            responseDTO.setFeedback(feedback.getContent());
+                                                            responseDTO.setAnswer(feedback.getAnswer());
+                                                            responseDTO.setPriority(question.getPriority());
+                                                            responseDTO.setDifficulty(question.getDifficulty());
+                                                            return responseDTO;
+                                                        })
+                                                )
+                                                .collectList()
+                                                .map(feedbackList -> new PageResponseDTO<>(feedbackList, totalElements, page)) // 올바른 totalElements 사용
+                                )
                 );
     }
 
@@ -152,21 +156,31 @@ public class FeedbackService {
                 )
                 .collectList()
                 .flatMap(feedbackQuestionPairs -> {
+                    long personalityScoreSum = 0;
                     long behavioralScoreSum = 0;
+                    int personalityCount = 0;
                     int behavioralCount = 0;
 
                     for (Tuple2<Feedback, Question> pair : feedbackQuestionPairs) {
                         Feedback feedback = pair.getT1();
+                        Question question = pair.getT2();
 
-                        
-                        behavioralScoreSum += feedback.getScore();
-                        behavioralCount++;
+                        if (question.getJobId() == 1L) {
+                            personalityScoreSum += feedback.getScore();
+                            personalityCount++;
+                        } else {
+                            behavioralScoreSum += feedback.getScore();
+                            behavioralCount++;
+                        }
                     }
 
+                    long personalityScoreAvg = (personalityCount > 0) ? personalityScoreSum / personalityCount : 0;
                     long behavioralScoreAvg = (behavioralCount > 0) ? behavioralScoreSum / behavioralCount : 0;
 
                     FeedbackStatResponseDTO responseDTO = new FeedbackStatResponseDTO();
+                    responseDTO.setPersonalityScore(personalityScoreAvg);
                     responseDTO.setBehavioralScore(behavioralScoreAvg);
+                    responseDTO.setPersonalityCount(personalityCount);
                     responseDTO.setBehavioralCount(behavioralCount);
 
                     return Mono.just(responseDTO);
@@ -177,8 +191,8 @@ public class FeedbackService {
         return feedbackRepository.findTop5UsersByScore();
     }
 
-    public Mono<UserRankingResponseDTO> getUserRanking(String name) {
-        return userService.findUserIdByName(name)
+    public Mono<UserRankingResponseDTO> getUserRanking(String email) {
+        return userService.findUserIdByEmail(email)
                         .flatMap(feedbackRepository::findUserRankingByUserId);
     }
 

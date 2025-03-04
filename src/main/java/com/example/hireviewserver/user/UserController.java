@@ -23,6 +23,7 @@ public class UserController {
         return principal
                 .map(Principal::getName)
                 .flatMap(userService::findUserByEmail)
+                .doOnNext(User::checkAttendance)
                 .map(UserInfoResponseDTO::new);
     }
 
@@ -66,9 +67,11 @@ public class UserController {
     public Flux<UserRankingResponseDTO> getTop5Rankings() {
         return feedbackService.getTop5Rankings();
     }
-    @GetMapping("/api/v1/user/{name}")
-    public Mono<UserRankingResponseDTO> getUserRanking(String name) {
-        return feedbackService.getUserRanking(name);
+    @GetMapping("/api/v1/user/rank")
+    public Mono<UserRankingResponseDTO> getUserRanking(Mono<Principal> principal) {
+        return principal
+                .map(Principal::getName)
+                .flatMap(feedbackService::getUserRanking);
     }
 
     @PostMapping("/api/token/v1/refresh")

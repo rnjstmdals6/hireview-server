@@ -35,4 +35,18 @@ public class PostResponseDTO {
         this.likes = likes;
         this.comments = comments;
     }
+
+    public PostResponseDTO(Post post, User user, Long likes, Long comments, String description) {
+        this.id = post.getId();
+        this.category = post.getCategory();
+        this.title = post.getTitle();
+        this.description = description;
+        this.email = user.getEmail();
+        this.name = user.getName();
+        this.picture = user.getPicture();
+        this.createdAt = post.getCreatedAt().format(FORMATTER);
+        this.views = post.getViews();
+        this.likes = likes;
+        this.comments = comments;
+    }
 }

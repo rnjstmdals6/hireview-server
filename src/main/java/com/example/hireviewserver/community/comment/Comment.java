@@ -7,7 +7,7 @@ import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 
-@Table("comments")
+@Table(name = "comments")
 @Getter
 @NoArgsConstructor
 public class Comment {

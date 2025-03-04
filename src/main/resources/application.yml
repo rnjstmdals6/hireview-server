@@ -45,7 +45,7 @@ gemini:
   api:
     key: AIzaSyDrC4U7xeBex1cf7WrnCjXcHAPhbuZpkdE
     url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=
-
+    origin-url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=
 app:
   base-url: "http://localhost:8080"
   redirect-url: "http://127.0.0.1:5173"

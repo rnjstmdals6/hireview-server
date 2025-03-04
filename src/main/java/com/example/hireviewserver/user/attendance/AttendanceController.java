@@ -12,7 +12,9 @@ import reactor.core.publisher.Mono;
 
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.Optional;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 @RestController
 @RequestMapping("/api/v1/attendance")
@@ -27,10 +29,13 @@ public class AttendanceController {
             Mono<Principal> principal,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate requestedDate) {
 
-        final LocalDate finalRequestedDate = (requestedDate == null) ? LocalDate.now() : requestedDate;
+        final LocalDate finalRequestedDate = (requestedDate == null)
+                ? ZonedDateTime.now(ZoneOffset.UTC).toLocalDate()
+                : requestedDate;
 
         return principal.map(Principal::getName)
                 .flatMap(userService::findUserIdByEmail)
                 .flatMapMany(userId -> attendanceService.getWeeklyAttendanceStatus(userId, finalRequestedDate));
     }
+
 }

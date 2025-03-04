@@ -7,7 +7,10 @@ import reactor.core.publisher.Mono;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Locale;
 
@@ -18,8 +21,12 @@ public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
 
     public Flux<WeeklyAttendanceDTO> getWeeklyAttendanceStatus(Long userId, LocalDate requestedDate) {
-        LocalDate startDate = requestedDate.with(DayOfWeek.MONDAY);
-        LocalDate endDate = requestedDate.with(DayOfWeek.SUNDAY);
+        ZonedDateTime utcNow = ZonedDateTime.now(ZoneOffset.UTC);
+        LocalDate utcToday = utcNow.toLocalDate();
+
+        LocalDate startDate = requestedDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+        LocalDate endDate = requestedDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY));
+
         List<LocalDate> weekDates = startDate.datesUntil(endDate.plusDays(1)).toList();
 
         return attendanceRepository.findAttendanceByUserIdAndWeek(userId, startDate, endDate)
@@ -27,9 +34,11 @@ public class AttendanceService {
                 .flatMapMany(attendedDates -> Flux.fromIterable(weekDates)
                         .map(date -> {
                             String status;
-                            if (attendedDates.contains(date)) {
+                            if (date.equals(utcToday)) {
+                                status = "today";
+                            } else if (attendedDates.contains(date)) {
                                 status = "attended";
-                            } else if (date.isAfter(LocalDate.now())) {
+                            } else if (date.isAfter(utcToday)) {
                                 status = "future";
                             } else {
                                 status = "missed";
@@ -40,10 +49,12 @@ public class AttendanceService {
                 );
     }
 
+
     public Mono<Void> markAttendance(Long userId) {
-        LocalDate today = LocalDate.now();
-        return attendanceRepository.findByUserIdAndDate(userId, today)
-                .switchIfEmpty(attendanceRepository.save(new Attendance(userId, today)))
+       LocalDate todayUtc = ZonedDateTime.now(ZoneOffset.UTC).toLocalDate();
+
+        return attendanceRepository.findByUserIdAndDate(userId, todayUtc)
+                .switchIfEmpty(attendanceRepository.save(new Attendance(userId, todayUtc)))
                 .then();
     }
 }
