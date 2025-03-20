@@ -52,9 +52,20 @@ public class GeminiService {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
+                .onStatus(status -> status.is4xxClientError() || status.is5xxServerError(), clientResponse ->
+                        clientResponse.bodyToMono(String.class)
+                                .doOnNext(errorBody ->
+                                        System.err.println("Gemini API Error Response: " + errorBody)
+                                )
+                                .flatMap(errorBody -> Mono.error(new RuntimeException("Gemini API Error: " + errorBody)))
+                )
                 .bodyToMono(String.class)
+                .doOnNext(responseBody -> {
+                    System.out.println("Gemini API Success Response: " + responseBody); // 정상 응답 로깅
+                })
                 .doOnError(e -> {
-                    System.err.println("Error calling Gemini: " + e.getMessage());
+                    System.err.println("Error calling Gemini: " + e.getMessage()); // 예외 로깅
                 });
     }
+
 }

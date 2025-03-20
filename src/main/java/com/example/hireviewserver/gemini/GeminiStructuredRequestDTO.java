@@ -19,7 +19,6 @@ public class GeminiStructuredRequestDTO {
         private final String role;
         private final List<Part> parts;
 
-        // ★ Part를 여기로 옮기기
         @Getter
         @Builder
         public static class Part {
@@ -51,6 +50,9 @@ public class GeminiStructuredRequestDTO {
     @Getter
     @Builder
     public static class ResponseSchemaProperty {
-        private final String type;
+        private String type;
+        private String format;
+        private Map<String, ResponseSchemaProperty> properties;
+        private ResponseSchemaProperty items;
     }
 }
