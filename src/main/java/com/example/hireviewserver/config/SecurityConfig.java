@@ -1,12 +1,11 @@
 package com.example.hireviewserver.config;
 
-import com.example.hireviewserver.user.JwtAuthenticationFilter;
-import com.example.hireviewserver.user.JwtAuthenticationManager;
-import com.example.hireviewserver.user.JwtTokenProvider;
-import com.example.hireviewserver.user.ReactiveOAuth2SuccessHandler;
+import com.example.hireviewserver.domain.user.JwtAuthenticationFilter;
+import com.example.hireviewserver.domain.user.JwtAuthenticationManager;
+import com.example.hireviewserver.domain.user.JwtTokenProvider;
+import com.example.hireviewserver.domain.user.ReactiveOAuth2SuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -24,7 +23,6 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final ReactiveOAuth2SuccessHandler successHandler;
 
-    // Google OAuth 설정값
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String googleClientId;
 
@@ -34,7 +32,6 @@ public class SecurityConfig {
     @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
     private String googleRedirectUri;
 
-    // Kakao OAuth 설정값
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String kakaoClientId;
 
