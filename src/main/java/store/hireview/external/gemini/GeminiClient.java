@@ -41,6 +41,19 @@ public class GeminiClient {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
-                .bodyToMono(String.class);
+                .onStatus(
+                        status -> status.is4xxClientError() || status.is5xxServerError(),
+                        clientResponse -> clientResponse.bodyToMono(String.class)
+                                .flatMap(errorBody -> {
+                                    System.err.println("🔥 Gemini Error Response Body:");
+                                    System.err.println(errorBody);
+                                    return Mono.error(new RuntimeException("Gemini API Error: " + errorBody));
+                                })
+                )
+                .bodyToMono(String.class)
+                .doOnNext(responseBody -> {
+                    System.out.println("✅ Gemini Success Response Body:");
+                    System.out.println(responseBody);
+                });
     }
 }

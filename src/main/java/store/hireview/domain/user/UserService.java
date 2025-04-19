@@ -8,6 +8,7 @@ import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import store.hireview.external.discord.DiscordGateway;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +24,7 @@ public class UserService {
     private String uploadDir;
     @Value("${app.base-url}")
     private String baseUrl;
+    private final DiscordGateway discordGateway;
 
 
     private final UserRepository userRepository;
@@ -31,8 +33,18 @@ public class UserService {
         return userRepository.findByEmail(email)
                 .doOnNext(User::checkAttendance)
                 .switchIfEmpty(
-                        userRepository.save(new User(email, name, picture))
-                                .doOnNext(User::checkAttendance)
+                        Mono.defer(() -> {
+                            User newUser = new User(email, name, picture);
+                            return userRepository.save(newUser)
+                                    .doOnNext(User::checkAttendance)
+                                    .flatMap(savedUser ->
+                                            userRepository.count()
+                                                    .flatMap(totalUsers ->
+                                                            discordGateway.sendNewUserNotification(name, email, totalUsers)
+                                                    )
+                                                    .thenReturn(savedUser)
+                                    );
+                        })
                 )
                 .flatMap(user -> attendanceService.markAttendance(user.getId())
                         .thenReturn(user)

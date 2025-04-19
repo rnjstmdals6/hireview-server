@@ -19,9 +19,14 @@ public class ChatController {
     private final InterviewSessionService sessionService;
     private final UserService userService;
 
-    @PostMapping("/session/{jobId}")
-    public Mono<InterviewSession> createSession(Principal principal, @PathVariable Long jobId) {
-        return sessionService.createSession(principal.getName(), jobId);
+    @PostMapping("/session")
+    public Mono<InterviewSession> createSession(
+            Mono<Principal> principal,
+            @RequestBody CreateSessionRequestDTO request
+    ) {
+        return principal
+                .map(Principal::getName)
+                .flatMap(email -> sessionService.createSession(email, request));
     }
 
     @GetMapping(value = "/interview/{sessionId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)

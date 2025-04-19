@@ -35,13 +35,13 @@ public class FeedbackService {
 
     public Flux<String> getFeedbackByQuestion(FeedbackRequestDTO request, String email) {
 
-        String feedbackCommand = request.getJob() + " as a professional interviewer, provide a detailed, objective feedback on the answer based on the following criteria:" +
-                                 " Accuracy: How accurate and relevant is the answer to the question? Provide a score in the format 'Accuracy: X/10'." +
-                                 " Completeness: Does the answer cover all important aspects? Provide a score in the format 'Completeness: X/10'." +
-                                 " Logicality: Is the answer logically sound, well-reasoned, and coherent? Provide a score in the format 'Logicality: X/10'." +
-                                 " Deduct points for each area where the answer is lacking." +
-                                 " Suggest specific ways to improve each aspect and provide an ideal answer." +
-                                 " Assign a final overall score out of 10 based on the overall performance with the following format 'Interview Score: X/10'. Be conservative in scoring, with 10 being excellent and 1 being very poor.";
+        String feedbackCommand = request.getJob() +
+                                 " As a professional interviewer, provide clear, readable, and constructive feedback based on the following criteria:" +
+                                 " Accuracy (X/10): Is the answer correct and relevant?" +
+                                 " Completeness (X/10): Does it address all key points?" +
+                                 " Logicality (X/10): Is the reasoning clear and well-organized?" +
+                                 " Suggest concrete improvements for each area and include an ideal answer." +
+                                 " Finish with 'Interview Score: X/10'. Ensure the total feedback is well-structured and within 500 characters.";
 
         String questionAndAnswer = "Question : " + request.getQuestion() + " Answer : " + request.getAnswer();
 
@@ -111,12 +111,25 @@ public class FeedbackService {
 
     private Map<String, Double> extractScores(String feedback) {
         Map<String, Double> scores = new HashMap<>();
-        Pattern pattern = Pattern.compile("(Accuracy|Completeness|Logicality|Interview Score): (\\d+)/10");
+        Pattern pattern = Pattern.compile(
+                "(Accuracy|Completeness|Logicality)\\s*\\((\\d+(\\.\\d+)?)/10\\)" +
+                "|Interview Score:\\s*(\\d+(\\.\\d+)?)/10",
+                Pattern.CASE_INSENSITIVE
+        );
         Matcher matcher = pattern.matcher(feedback);
 
         while (matcher.find()) {
-            String category = matcher.group(1); // Accuracy, Completeness, Logicality, Interview Score
-            Double score = Double.parseDouble(matcher.group(2)); // 점수 추출
+            String category;
+            Double score;
+
+            if (matcher.group(1) != null) {
+                category = matcher.group(1);
+                score = Double.parseDouble(matcher.group(2));
+            } else {
+                category = "Interview Score";
+                score = Double.parseDouble(matcher.group(4));
+            }
+
             scores.put(category, score);
         }
 

@@ -17,12 +17,7 @@ public class UserSuggestionService {
         return userService.findUserIdByEmail(email)
                 .flatMap(userId ->
                         userSuggestionRepository.save(new UserSuggestion(userId, dto))
-                                .then(discordGateway.sendMessage(new DiscordRequestDTO(
-                                        "New User Suggestion",
-                                        email,
-                                        dto.getContent(),
-                                        dto.getEvaluation()
-                                )))
+                                .then(discordGateway.sendFeedback("New User Suggestion", email, dto.getContent(), dto.getEvaluation()))
                 );
     }
 }

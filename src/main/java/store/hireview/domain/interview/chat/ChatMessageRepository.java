@@ -5,4 +5,5 @@ import reactor.core.publisher.Flux;
 
 public interface ChatMessageRepository extends ReactiveCrudRepository<ChatMessage, Long> {
     Flux<ChatMessage> findBySessionId(String sessionId);
+    Flux<ChatMessage> findBySessionIdOrderByIdDesc(String sessionId);
 }
